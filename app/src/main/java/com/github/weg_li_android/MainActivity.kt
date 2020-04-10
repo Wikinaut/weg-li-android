@@ -9,6 +9,7 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.lifecycle.ViewModelProviders
 import com.github.weg_li_android.data.model.Report
 import com.github.weg_li_android.ui.main.viewmodel.MainViewModel
+import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -19,6 +20,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        initializePhotoList(findViewById(R.id.photos_grid))
         setupCarTypeSpinner()
         setupViolationSpinner()
         durationText.setOnClickListener {
@@ -26,6 +28,18 @@ class MainActivity : AppCompatActivity() {
 
         mainViewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
         sendButton.setOnClickListener { mainViewModel.sendReport(report) }
+    }
+
+    private fun initializePhotoList(view: Any) {
+        if (view is RecyclerView) {
+             val images = arrayOf(
+                R.drawable.ic_baseline_add_a_photo_24,
+                R.drawable.ic_baseline_add_to_photos_24
+            )
+            val photoAdapter = PhotoAdapter(this, images)
+            // view.adapter = photoAdapter
+        }
+
     }
 
     private fun setupCarTypeSpinner() {
