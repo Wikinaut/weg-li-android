@@ -46,11 +46,30 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/photos_grid"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/photos_header_text" >
+
             </androidx.recyclerview.widget.RecyclerView>
 
+
+            <Button
+                android:id="@+id/take_picture_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/take_picture"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/photos_grid"
+                tools:layout_editor_absoluteY="44dp" />
+
+            <Button
+                android:id="@+id/add_picture_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/add_picture"
+                app:layout_constraintLeft_toRightOf="@id/take_picture_button"
+                app:layout_constraintTop_toBottomOf="@id/photos_grid"
+                tools:layout_editor_absoluteY="44dp" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/status_image"
@@ -59,7 +78,7 @@
                 android:layout_marginStart="@dimen/standard_16dp"
                 android:layout_marginTop="@dimen/standard_16dp"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/photos_header_text"
+                app:layout_constraintTop_toBottomOf="@id/take_picture_button"
                 app:srcCompat="@drawable/ic_baseline_error_24" />
 
             <androidx.appcompat.widget.AppCompatTextView
