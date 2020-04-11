@@ -1,14 +1,15 @@
 package com.github.weg_li_android
 
-import PhotoRecyclerViewAdapter
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.ImageDecoder
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
-import android.view.View.OnTouchListener
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
@@ -19,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.weg_li_android.data.model.Report
 import com.github.weg_li_android.ui.main.viewmodel.MainViewModel
 import kotlinx.android.synthetic.main.activity_main.*
+import timber.log.Timber
 
 
 class MainActivity : AppCompatActivity(), PhotoRecyclerViewAdapter.ItemClickListener {
@@ -26,10 +28,12 @@ class MainActivity : AppCompatActivity(), PhotoRecyclerViewAdapter.ItemClickList
     private lateinit var photoAdapter: PhotoRecyclerViewAdapter
     private lateinit var mainViewModel: MainViewModel
     private val report = Report()
-    private val PICK_IMAGE = 1
-    private val TAKE_IMAGE = 2
+    private val pickImage = 1
+    private val takeImage = 2
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Timber.plant(Timber.DebugTree())
         setContentView(R.layout.activity_main)
         setupPhotoRecyclerView()
         setupCarTypeSpinner()
@@ -42,10 +46,7 @@ class MainActivity : AppCompatActivity(), PhotoRecyclerViewAdapter.ItemClickList
     }
 
     private fun setupPhotoRecyclerView() {
-        val data = arrayOf(
-            "1",
-            "2"
-        )
+        val data = mutableListOf<Bitmap>()
 
         val recyclerView = findViewById<RecyclerView>(R.id.photos_grid)
         val numberOfColumns = 3
@@ -54,19 +55,17 @@ class MainActivity : AppCompatActivity(), PhotoRecyclerViewAdapter.ItemClickList
         photoAdapter.setClickListener(this)
         recyclerView.adapter = photoAdapter
 
-        take_picture_button.setOnTouchListener(OnTouchListener { v, event ->
+        take_picture_button.setOnTouchListener { v, event ->
             when (event.action) {
                 MotionEvent.ACTION_DOWN ->
                     dispatchTakePictureIntent()
-                    //return@OnTouchListener true // if you want to handle the touch event
                 MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL ->
                     v.performClick()
-                   // return@OnTouchListener true // if you want to handle the touch event
             }
             false
-        })
+        }
 
-        add_picture_button.setOnTouchListener(OnTouchListener {v, event ->
+        add_picture_button.setOnTouchListener { v, event ->
             when (event.action) {
                 MotionEvent.ACTION_DOWN ->
                     dispatchPickPictureIntent()
@@ -74,7 +73,7 @@ class MainActivity : AppCompatActivity(), PhotoRecyclerViewAdapter.ItemClickList
                     v.performClick()
             }
             false
-        })
+        }
 
     }
 
@@ -83,17 +82,18 @@ class MainActivity : AppCompatActivity(), PhotoRecyclerViewAdapter.ItemClickList
             Intent.ACTION_PICK,
             MediaStore.Images.Media.EXTERNAL_CONTENT_URI
         )
-        startActivityForResult(pickPhoto, PICK_IMAGE)
-
+        pickPhoto.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+        startActivityForResult(pickPhoto, pickImage)
     }
 
     private fun dispatchTakePictureIntent() {
         Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
             takePictureIntent.resolveActivity(packageManager)?.also {
-                startActivityForResult(takePictureIntent, TAKE_IMAGE)
+                startActivityForResult(takePictureIntent, takeImage)
             }
         }
     }
+
     private fun setupCarTypeSpinner() {
         ArrayAdapter.createFromResource(
             this,
@@ -129,17 +129,46 @@ class MainActivity : AppCompatActivity(), PhotoRecyclerViewAdapter.ItemClickList
     }
 
     override fun onItemClick(view: View?, position: Int) {
-        Log.i("TAG", "You clicked number " + photoAdapter.getItem(position) + ", which is at cell position " + position);
+        Timber.e("You clicked number %s", position.toString())
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if(resultCode != Activity.RESULT_CANCELED && data != null) {
-            when(resultCode) {
-                PICK_IMAGE ->
-                    data.hashCode()
-                TAKE_IMAGE ->
-                    data.hashCode()
+        if(resultCode == Activity.RESULT_OK && data != null) {
+            when(requestCode) {
+                pickImage -> {
+                    if (data.clipData != null) {
+                        val count = data.clipData!!.itemCount
+                        for(i in 0 until count) {
+                            val imageUri : Uri? = data.clipData!!.getItemAt(i).uri
+                            if(Build.VERSION.SDK_INT > 28) {
+                                val source =
+                                    imageUri?.let {
+                                        ImageDecoder.createSource(this.contentResolver,
+                                            it
+                                        )
+                                    }
+                                val bitmap = source?.let { ImageDecoder.decodeBitmap(it) }
+                                if (bitmap != null) {
+                                    val insertIndex = photoAdapter.addItem(bitmap)
+                                    photoAdapter.notifyItemInserted(insertIndex)
+                                }
+                            }
+
+                            /* we should add this for SDK_INT <= 28
+                            val bitmap = MediaStore.Images.Media.getBitmap(
+                                this.contentResolver,
+                                imageUri
+                            )*/
+                        }
+                    }
+                    else if (data.data != null) {
+                        val mImageUri: Uri = data.data!! // TODO: Add something useful here.
+                    }
+
+                    }
+                takeImage ->
+                    data.hashCode() // TODO: Replace this with something useful.
             }
 
         }
