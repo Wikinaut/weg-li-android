@@ -167,8 +167,11 @@ class MainActivity : AppCompatActivity(), PhotoRecyclerViewAdapter.ItemClickList
                     }
 
                     }
-                takeImage ->
-                    data.hashCode() // TODO: Replace this with something useful.
+                takeImage -> {
+                        val bitmap = data.extras?.get("data") as Bitmap
+                        val insertIndex = photoAdapter.addItem(bitmap)
+                        photoAdapter.notifyItemInserted(insertIndex)
+                }
             }
 
         }
