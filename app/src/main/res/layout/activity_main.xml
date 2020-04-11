@@ -48,6 +48,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/photos_header_text">
 
@@ -60,6 +61,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
+                android:theme="@style/PrimaryFlatButton"
+                android:drawable="@drawable/ic_baseline_add_a_photo_24"
                 android:text="@string/take_picture"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/photos_grid" />
@@ -69,6 +72,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
+                android:theme="@style/PrimaryFlatButton"
                 android:text="@string/add_picture"
                 app:layout_constraintBottom_toBottomOf="@id/take_picture_button"
                 app:layout_constraintLeft_toRightOf="@id/take_picture_button" />
