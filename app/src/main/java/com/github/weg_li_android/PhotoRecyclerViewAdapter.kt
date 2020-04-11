@@ -1,19 +1,24 @@
+package com.github.weg_li_android
+
 import android.content.Context
+import android.content.res.Resources
+import android.graphics.Bitmap
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.NonNull
 import androidx.appcompat.widget.AppCompatImageView
+import androidx.core.graphics.drawable.toDrawable
 import androidx.recyclerview.widget.RecyclerView
-import com.github.weg_li_android.R
 
 
 class PhotoRecyclerViewAdapter internal constructor(
     context: Context?,
-    data: Array<String>
+    data: MutableList<Bitmap>
 ) :
     RecyclerView.Adapter<PhotoRecyclerViewAdapter.ViewHolder>() {
-    private val mData: Array<String> = data
+    private val mData: MutableList<Bitmap> = data
+    private val resources: Resources = context?.resources ?: throw Exception("No context found.")
     private val mInflater: LayoutInflater = LayoutInflater.from(context)
     private var mClickListener: ItemClickListener? = null
 
@@ -32,7 +37,7 @@ class PhotoRecyclerViewAdapter internal constructor(
         @NonNull holder: ViewHolder,
         position: Int
     ) {
-        holder.myAppCompatImageView.contentDescription = mData[position]
+        holder.myAppCompatImageView.background = mData[position].toDrawable(resources)
     }
 
     // total number of cells
@@ -53,9 +58,13 @@ class PhotoRecyclerViewAdapter internal constructor(
         }
     }
 
-    // convenience method for getting data at click position
-    fun getItem(id: Int): String {
+    fun getItem(id: Int): Bitmap {
         return mData[id]
+    }
+
+    fun addItem(image: Bitmap) : Int {
+        mData.add(image)
+        return mData.lastIndex
     }
 
     // allows clicks events to be caught
