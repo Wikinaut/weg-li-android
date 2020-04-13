@@ -1,5 +1,7 @@
 package com.github.weg_li_android.data.model
 
+import android.graphics.Bitmap
+
 data class Report(
     val id: Int = 0,
     var address: String = "",
@@ -13,5 +15,6 @@ data class Report(
     var userAddress: String = "",
     var userPostalCode: String = "",
     var phoneNumber: String = "",
-    var userEmail: String = ""
+    var userEmail: String = "",
+    val violationPhotos: MutableList<Bitmap> = mutableListOf()
 )

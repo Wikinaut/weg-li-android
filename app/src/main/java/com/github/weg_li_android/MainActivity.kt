@@ -46,12 +46,10 @@ class MainActivity : AppCompatActivity(), PhotoRecyclerViewAdapter.ItemClickList
     }
 
     private fun setupPhotoRecyclerView() {
-        val data = mutableListOf<Bitmap>()
-
         val recyclerView = findViewById<RecyclerView>(R.id.photos_grid)
         val numberOfColumns = 3
         recyclerView.layoutManager = GridLayoutManager(this, numberOfColumns)
-        photoAdapter = PhotoRecyclerViewAdapter(this, data)
+        photoAdapter = PhotoRecyclerViewAdapter(this, report.violationPhotos)
         photoAdapter.setClickListener(this)
         recyclerView.adapter = photoAdapter
 
